@@ -1,46 +1,9 @@
+import os
 
 
-class PeerChannel():
-    def channel_create(self):
-        # peer channel create \
-        # - c ${channel} \
-        # - o ${orderer_url} \
-        # - f ${CHANNEL_ARTIFACTS} /${channel_tx} \
-        # - -timeout "${TIMEOUT}s"
-        return
+class PeerChainCode:
 
-    def channel_join(self):
-        # peer channel join \
-        # - b ${channel}.block \
-        # > & log.txt
-        return
-
-    def channel_list(self):
-        # peer channel list > & log.txt
-        return
-
-    def channel_getinfo(self):
-        # peer channel getinfo -c ${channel} >&log.txt
-        return
-
-    def channel_fetch(self):
-        # peer channel fetch $num ${block_file} \
-        # - o ${orderer_url} \
-        # - c ${channel} \
-        # > & log.txt
-        return
-
-    def channel_signconfigtx(self):
-        # peer channel signconfigtx - f ${CHANNEL_ARTIFACTS} /${tx} > & log.txt
-        return
-
-    def channel_update(self):
-        # peer channel update \
-        # - c ${channel} \
-        # - o ${orderer_url} \
-        # - f ${CHANNEL_ARTIFACTS} /${tx} \
-        # > & log.txt
-        return
+    """调用cmd执行chaincode install等相关操作"""
 
     def chaincode_lifecycle_install(self):
         # peer lifecycle chaincode package ${cc_name}.tar.gz \
