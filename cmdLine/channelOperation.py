@@ -1,18 +1,23 @@
 import os
-import basicParameters
+from cmdLine.basicParameters import BasicEnv
+
 
 class PeerChannel(BasicEnv):
+    TimeOut = "90"
 
     """调用cmd执行channel create、join等相关操作"""
 
-    def __init__(self, org_msp_id, org_admin_msp, channel, orderer_url):
-        self.org_msp_id = org_msp_id
-        self.org_admin_msp = org_admin_msp
+    def __init__(self, channel, orderer_url, channel_tx, version, time_out="90", **kwargs):
+        super(PeerChannel, self).__init__(version, **kwargs)
         self.channel = channel
         self.orderer_ul = orderer_url
+        self.channel_tx = channel_tx
+        self.time_out = time_out
 
     def channel_create(self):
-        os.system("peer channel create -c {} -o {} ".format(self.channel, self.orderer_ul))
+        if self.version in BasicEnv.binary_versions:
+            os.system("./../bin/{}/peer channel create -c {} -o {} -f {} --timeout {}".
+                      format(self.version, self.channel, self.orderer_ul, self.channel_tx, self.time_out))
         # peer channel create \
         # - c ${channel} \
         # - o ${orderer_url} \

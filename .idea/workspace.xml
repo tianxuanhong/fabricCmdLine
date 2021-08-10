@@ -2,10 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="05caaee2-a233-486c-bb03-f1c9bbde0eb2" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmdLine/basicParameters.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmdLine/channelOperation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmdLine/operation.py" beforeDir="false" afterPath="$PROJECT_DIR$/cmdLine/chaincodeOperation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/celloCmdLine.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/celloCmdLine.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/configtxgen" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/configtxlator" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/cryptogen" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/discover" beforeDir="false" afterPath="$PROJECT_DIR$/bin/v2.2.1/discover" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/idemixgen" beforeDir="false" afterPath="$PROJECT_DIR$/bin/v2.2.1/idemixgen" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/orderer" beforeDir="false" afterPath="$PROJECT_DIR$/bin/v2.2.1/orderer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/peer" beforeDir="false" afterPath="$PROJECT_DIR$/bin/v2.2.1/peer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmdLine/basicParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/cmdLine/basicParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmdLine/chaincodeOperation.py" beforeDir="false" afterPath="$PROJECT_DIR$/cmdLine/chaincodeOperation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmdLine/channelOperation.py" beforeDir="false" afterPath="$PROJECT_DIR$/cmdLine/channelOperation.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,20 +25,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="chaincodeOperation.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cmdLine/chaincodeOperation.py">
+      <file leaf-file-name="basicParameters.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cmdLine/basicParameters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+            <state relative-caret-position="195">
+              <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="channelOperation.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/cmdLine/channelOperation.py">
+      <file leaf-file-name="chaincodeOperation.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cmdLine/chaincodeOperation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="24" column="32" lean-forward="true" selection-start-line="24" selection-start-column="32" selection-end-line="24" selection-end-column="32" />
+            <state relative-caret-position="105">
+              <caret line="7" column="81" lean-forward="true" selection-start-line="7" selection-start-column="81" selection-end-line="7" selection-end-column="81" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -37,11 +46,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="basicParameters.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cmdLine/basicParameters.py">
+      <file leaf-file-name="channelOperation.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cmdLine/channelOperation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="14" selection-start-column="6" selection-end-column="14" />
+            <state relative-caret-position="465">
+              <caret line="31" column="14" lean-forward="true" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -63,8 +75,8 @@
       <list>
         <option value="$PROJECT_DIR$/cmdLine/channelOperator.py" />
         <option value="$PROJECT_DIR$/cmdLine/chaincodeOperation.py" />
-        <option value="$PROJECT_DIR$/cmdLine/basicParameters.py" />
         <option value="$PROJECT_DIR$/cmdLine/channelOperation.py" />
+        <option value="$PROJECT_DIR$/cmdLine/basicParameters.py" />
       </list>
     </option>
   </component>
@@ -88,6 +100,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -98,13 +111,17 @@
             <path>
               <item name="celloCmdLine" type="b2602c69:ProjectViewProjectNode" />
               <item name="celloCmdLine" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="celloCmdLine" type="b2602c69:ProjectViewProjectNode" />
+              <item name="celloCmdLine" type="462c0819:PsiDirectoryNode" />
               <item name="cmdLine" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -112,6 +129,23 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="celloCmdLine" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="celloCmdLine" />
+        <option name="myAddSourceRoots" value="true" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/bin/v2.2.1" />
+      <recent name="$PROJECT_DIR$/cmdLine" />
+      <recent name="$PROJECT_DIR$/cmdLine/basicParam" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -139,7 +173,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="8" y="31" width="1280" height="657" extended-state="0" />
+    <frame x="9" y="31" width="1582" height="820" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -149,7 +183,7 @@
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Python Console" />
       <window_info anchor="bottom" id="Terminal" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24968395" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
       <window_info anchor="right" id="Database" />
       <window_info anchor="right" id="SciView" />
@@ -158,11 +192,12 @@
       <window_info id="Favorites" side_tool="true" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="TODO" order="6" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -172,27 +207,39 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cmdLine/chaincodeOperation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/cmdLine/operation.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/cmdLine/basicParameters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="14" selection-start-column="6" selection-end-column="14" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/cmdLine/basicParam/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/cmdLine/channelOperation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="32" lean-forward="true" selection-start-line="24" selection-start-column="32" selection-end-line="24" selection-end-column="32" />
+        <state relative-caret-position="465">
+          <caret line="31" column="14" lean-forward="true" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmdLine/chaincodeOperation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="81" lean-forward="true" selection-start-line="7" selection-start-column="81" selection-end-line="7" selection-end-column="81" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmdLine/basicParameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
         </state>
       </provider>
     </entry>
