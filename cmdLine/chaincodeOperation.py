@@ -5,12 +5,8 @@ from cmdLine.basicParameters import BasicEnv
 class PeerChainCode(BasicEnv):
     """调用cmd执行chaincode install等相关操作"""
 
-    def __init__(self, version, org_msp_id, org_admin_msp, channel, orderer_url,):
-        super(PeerChainCode, self).__init__(version)
-        self.org_msp_id = org_msp_id
-        self.org_admin_msp = org_admin_msp
-        self.channel = channel
-        self.orderer_ul = orderer_url
+    def __init__(self, version, **kwargs):
+        super(PeerChainCode, self).__init__(version, **kwargs)
 
     def chaincode_lifecycle_install(self):
         if self.version in BasicEnv.binary_versions:

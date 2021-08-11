@@ -5,23 +5,19 @@ from cmdLine.basicParameters import BasicEnv
 class PeerChannel(BasicEnv):
     """调用cmd执行channel create、join等相关操作"""
 
-    def __init__(self, channel, orderer_url, channel_tx, version, time_out="90", **kwargs):
+    def __init__(self, version, **kwargs):
         super(PeerChannel, self).__init__(version, **kwargs)
-        self.channel = channel
-        self.orderer_ul = orderer_url
-        self.channel_tx = channel_tx
-        self.time_out = time_out
 
-    def channel_create(self):
+    def channel_create(self, channel, orderer_url, channel_tx, orderer_tls_rootcert, time_out="90"):
         if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") == "":
-            if self.version in BasicEnv.binary_versions:
+            if self.version in BasicEnv.binary_versions_v2:
                 os.system("./../bin/{}/peer channel create -c {} -o {} -f {} --timeout {}".
-                          format(self.version, self.channel, self.orderer_ul, self.channel_tx, self.time_out))
+                          format(self.version, channel, orderer_url, channel_tx, time_out))
         else:
-            if self.version in BasicEnv.binary_versions:
-                os.system("./../bin/{}/peer channel create -c {} -o {} -f {} --timeout {} --tls--cafile {}".
-                          format(self.version, self.channel, self.orderer_ul, self.channel_tx,
-                                 self.time_out, os.getenv("ORDERER0_TLS_ROOTCERT")))
+            if self.version in BasicEnv.binary_versions_v2:
+                os.system("./../bin/{}/peer channel create -c {} -o {} -f {} --timeout {} --tls --cafile {}".
+                          format(self.version, channel, orderer_url, channel_tx,
+                                 time_out, orderer_tls_rootcert))
 
         # peer channel create \
         # - c ${channel} \
