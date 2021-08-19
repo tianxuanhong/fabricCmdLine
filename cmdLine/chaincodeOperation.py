@@ -2,15 +2,15 @@ import os
 from cmdLine.basicParameters import BasicEnv
 
 
-class PeerChainCode(BasicEnv):
+class ChainCode(BasicEnv):
     """调用cmd执行chaincode install等相关操作"""
 
     def __init__(self, version, **kwargs):
-        super(PeerChainCode, self).__init__(version, **kwargs)
+        super(ChainCode, self).__init__(version, **kwargs)
 
-    def chaincode_lifecycle_install(self):
-        if self.version in BasicEnv.binary_versions:
-            os.system("./../{}/peer channel create -c {} -o {} ".format(self.version, self.channel, self.orderer_ul))
+    def lifecycle_install(self):
+        if self.version in BasicEnv.binary_versions_v2:
+            os.system("./../{}/peer ")
         # peer lifecycle chaincode package ${cc_name}.tar.gz \
         #  - -path ${cc_path} \
         #  - -lang golang \
@@ -22,7 +22,7 @@ class PeerChainCode(BasicEnv):
         # {cc_name}.tar.gz | tee > & log.txt
         return
 
-    def chaincode_lifecycle_query(self):
+    def lifecycle_query(self):
         # peer lifecycle chaincode queryinstalled \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
@@ -31,7 +31,7 @@ class PeerChainCode(BasicEnv):
         # - -connTimeout "3s"
         return
 
-    def chaincode_lifecycle_get_installed(self):
+    def lifecycle_get_installed(self):
         # peer lifecycle chaincode getinstalledpackage \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
@@ -41,7 +41,7 @@ class PeerChainCode(BasicEnv):
         # - -connTimeout "3s"
         return
 
-    def chaincode_lifecycle_approve_for_my_org(self):
+    def lifecycle_approve_for_my_org(self):
         # peer lifecycle chaincode approveformyorg \
         # - -peerAddresses ${peer_url} \
         # - -channelID ${channel} \
@@ -55,7 +55,7 @@ class PeerChainCode(BasicEnv):
         # - -orderer ${orderer_url} > & log.txt
         return
 
-    def chaincode_lifecycle_query_approved(self):
+    def lifecycle_query_approved(self):
         # peer lifecycle chaincode queryapproved \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
@@ -64,7 +64,7 @@ class PeerChainCode(BasicEnv):
         # - -output json
         return
 
-    def chaincode_lifecycle_check_commit_readiness(self):
+    def lifecycle_check_commit_readiness(self):
         # peer lifecycle chaincode checkcommitreadiness \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
@@ -75,7 +75,7 @@ class PeerChainCode(BasicEnv):
         # - -sequence ${sequence}
         return
 
-    def chaincode_lifecycle_commit(self):
+    def lifecycle_commit(self):
         # peer lifecycle chaincode commit \
         # - o ${orderer_url} \
         # - -channelID ${channel} \
@@ -92,7 +92,7 @@ class PeerChainCode(BasicEnv):
         # - -signature - policy "${policy}"
         return
 
-    def chaincode_lifecycle_query_committed(self):
+    def lifecycle_query_committed(self):
         # peer lifecycle chaincode querycommitted \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
@@ -101,7 +101,7 @@ class PeerChainCode(BasicEnv):
         # - -name ${cc_name}
         return
 
-    def chaincode_instantiate(self):
+    def instantiate(self):
         # peer chaincode instantiate \
         # - o ${orderer_url} \
         # - C ${channel} \
@@ -113,7 +113,7 @@ class PeerChainCode(BasicEnv):
         # > & log.txt
         return
 
-    def chaincode_invoke(self):
+    def invoke(self):
         # peer chaincode invoke \
         # - o ${orderer_url} \
         # - -channelID ${channel} \
@@ -124,7 +124,7 @@ class PeerChainCode(BasicEnv):
         # > & log.txt
         return
 
-    def chaincode_query(self):
+    def query(self):
         # peer chaincode query \
         # - C "${channel}" \
         # - n "${cc_name}" \
@@ -134,12 +134,12 @@ class PeerChainCode(BasicEnv):
         # > & log.txt
         return
 
-    def chaincode_list(self):
+    def list(self):
         # peer chaincode list \
         # - -installed > log.txt &
         return
 
-    def chaincode_upgrade(self):
+    def upgrade(self):
         # peer chaincode upgrade \
         # - o ${orderer_url} \
         # - C ${channel} \

@@ -1,15 +1,19 @@
 import os
 
 class BasicEnv:
-    binary_versions_v2 = ['v2.2.1', 'v2.2.2']
+    binary_versions_v2 = ['v2.2.0', 'v2.2.1', 'v2.2.2']
     binary_versions_v1 = ['v1.4.1', 'v1.4.2']
 
     def __init__(self, version, **kwargs):
         self.version = version
         # 根据用户输入设置环境变量，建议主要设置CORE_PEER_LOCALMSPID、CORE_PEER_TLS_CERT_FILE、
-        # CORE_PEER_TLS_KEY_FILE、CORE_PEER_TLS_ROOTCERT_FILE、CORE_PEER_MSPCONFIGPATH等
+        # CORE_PEER_TLS_KEY_FILE、CORE_PEER_TLS_ROOTCERT_FILE、CORE_PEER_MSPCONFIGPATH，CORE_PEER_MSPCONFIGPATH
+        # CORE_PEER_TLS_ROOTCERT_FILE，CORE_PEER_ADDRESS 等等
 
         # 1. 环境变量
+        pwd = os.getcwd()
+        os.environ["FABRIC_CFG_PATH"] = "{}/../bin/{}/config".format(pwd, version)
+        os.environ["CORE_PEER_TLS_ENABLED"] = "true"
         for k, v in kwargs.items():
             os.environ[k] = v
         #   os.system("export {}={}".format(k, v))  export或者setenv之后，无法通过getenv获取到. 具体哪种方式适合peer，待测试
