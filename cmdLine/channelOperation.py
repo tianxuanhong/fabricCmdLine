@@ -42,10 +42,10 @@ class Channel(BasicEnv):
         return res
 
     # 调用者负责提供存放文件的路径和文件名？
-    def list(self, file_path):
+    def list(self):
         res = 0x100
         if self.version in BasicEnv.binary_versions_v2:
-            res = os.system("./../bin/{}/peer channel list > &{}".format(self.version, file_path))
+            res = os.system("./../bin/{}/bin/peer channel list".format(self.version))
         # peer channel list > & log.txt
         return res
 
