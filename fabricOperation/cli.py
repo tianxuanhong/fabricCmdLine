@@ -14,10 +14,17 @@ def channel_create():
 
 
 def channel_list():
-   # file_path = "../log.txt"
+    # file_path = "../log.txt"
     newchannel = Channel("v2.2.0", **envCli)
     res = newchannel.list()
     print("res", res)
+
+
+def channel_join():
+    block_file = ""
+    newchannel = Channel("v2.2.0", **envCli)
+    res = newchannel.join(block_file)
+    print()
 
 
 if __name__ == "__main__":
