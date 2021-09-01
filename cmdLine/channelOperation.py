@@ -34,7 +34,7 @@ class Channel(BasicEnv):
     def join(self, block_file):
         res = 0x100
         if self.version in BasicEnv.binary_versions_v2:
-            res = os.system("./../bin/{}/peer channel join -b {}".format(self.version, block_file))
+            res = os.system("./../bin/{}/bin/peer channel join -b {}".format(self.version, block_file))
         # peer channel join \
         # - b ${channel}.block \
         # > & log.txt

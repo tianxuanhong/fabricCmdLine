@@ -2,9 +2,9 @@ from cmdLine.channelOperation import Channel
 
 
 def channel_create():
-    channel_name = "mychannel2"
+    channel_name = "mychannel3"
     orderer_url = "localhost:7050"
-    channel_tx = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/channel-artifacts/mychannel2.tx"
+    channel_tx = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/channel-artifacts/mychannel3.tx"
     orderer_tls_rootcert = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/" \
                            "ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/" \
                            "tlsca.example.com-cert.pem"
@@ -21,7 +21,7 @@ def channel_list():
 
 
 def channel_join():
-    block_file = ""
+    block_file = "/opt/gopath/src/github.com/hyperledger/celloCmdLine/fabricOperation/mychannel3.block"
     newchannel = Channel("v2.2.0", **envCli)
     res = newchannel.join(block_file)
     print()
@@ -36,6 +36,6 @@ if __name__ == "__main__":
                                           "organizations/peerOrganizations/org1.example.com/users/"
                                           "Admin@org1.example.com/msp",
                   CORE_PEER_ADDRESS="localhost:7051")
-    #channel_create()
+    # channel_create()
     channel_list()
-    # envset()
+    # channel_join()
