@@ -49,9 +49,13 @@ class Channel(BasicEnv):
         # peer channel list > & log.txt
         return res
 
-    def getinfo(self):
+    def getinfo(self, channel):
+        res = 0x100
+        if self.version in BasicEnv.binary_versions_v2:
+            res = os.system("./../bin/{}/bin/peer channel getinfo -c {}".format(self.version, channel))
         # peer channel getinfo -c ${channel} >&log.txt
-        return
+        return res
+
 
     def fetch(self):
         # peer channel fetch $num ${block_file} \

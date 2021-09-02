@@ -27,6 +27,13 @@ def channel_join():
     print()
 
 
+def channel_getinfo():
+    newchannel = Channel("v2.2.0", **envCli)
+    channel_name = "mychannel3"
+    res = newchannel.getinfo(channel_name)
+    print("res", res)
+
+
 if __name__ == "__main__":
     envCli = dict(CORE_PEER_LOCALMSPID="Org1MSP",
                   CORE_PEER_TLS_ROOTCERT_FILE="/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/"
@@ -37,5 +44,6 @@ if __name__ == "__main__":
                                           "Admin@org1.example.com/msp",
                   CORE_PEER_ADDRESS="localhost:7051")
     # channel_create()
-    channel_list()
+    # channel_list()
     # channel_join()
+    channel_getinfo()
