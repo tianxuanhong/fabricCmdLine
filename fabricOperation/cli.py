@@ -17,7 +17,8 @@ def channel_list():
     # file_path = "../log.txt"
     newchannel = Channel("v2.2.0", **envCli)
     res = newchannel.list()
-    print("res", res)
+    print("res", res[0])
+    print("reslist", res[1])
 
 
 def channel_join():
@@ -31,7 +32,8 @@ def channel_getinfo():
     newchannel = Channel("v2.2.0", **envCli)
     channel_name = "mychannel3"
     res = newchannel.getinfo(channel_name)
-    print("res", res)
+    print("content", res[0])
+    print("res", res[1])
 
 
 if __name__ == "__main__":
@@ -43,7 +45,8 @@ if __name__ == "__main__":
                                           "organizations/peerOrganizations/org1.example.com/users/"
                                           "Admin@org1.example.com/msp",
                   CORE_PEER_ADDRESS="localhost:7051")
-    # channel_create()
-    # channel_list()
-    # channel_join()
-    channel_getinfo()
+    # # channel_create()
+    channel_list()
+    # # channel_join()
+    # channel_getinfo()
+

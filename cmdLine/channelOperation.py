@@ -1,4 +1,5 @@
 import os
+import json
 from cmdLine.basicParameters import BasicEnv
 
 
@@ -44,18 +45,30 @@ class Channel(BasicEnv):
     # 调用者负责提供存放文件的路径和文件名？
     def list(self):
         res = 0x100
+        content = ""
         if self.version in BasicEnv.binary_versions_v2:
-            res = os.system("./../bin/{}/bin/peer channel list".format(self.version))
+            res = os.system("./../bin/{}/bin/peer channel list > ./list.txt".format(self.version))
+            with open('./list.txt', 'r', encoding='utf-8') as f:
+                content = f.read()
+            content = content.split("\n")
+            os.system("rm ./list.txt")
+
         # peer channel list > & log.txt
-        return res
+        return res, content[1:-1]
 
     def getinfo(self, channel):
         res = 0x100
         if self.version in BasicEnv.binary_versions_v2:
-            res = os.system("./../bin/{}/bin/peer channel getinfo -c {}".format(self.version, channel))
+            res = os.system("./../bin/{}/bin/peer channel getinfo -c {} > ./getinfo.txt".format(self.version, channel))
+            with open('./getinfo.txt', 'r', encoding='utf-8') as f:
+                content = f.read()
+            content = content.split("\n")[0].split(":", 1)[1]
+            # content = content.split("\n")[0]
+            os.system("rm ./getinfo.txt")
+        block_info = json.loads(content)
+        body = {"block_info": block_info}
         # peer channel getinfo -c ${channel} >&log.txt
-        return res
-
+        return res, body
 
     def fetch(self):
         # peer channel fetch $num ${block_file} \
