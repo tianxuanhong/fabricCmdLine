@@ -50,8 +50,22 @@ def chaincode_package():
 def chaincode_install():
     newchaincode = ChainCode("v2.2.0", **envCli)
     cc_targz = "./example02.tar.gz"
-    res = newchaincode. lifecycle_install(cc_targz)
+    res = newchaincode.lifecycle_install(cc_targz)
     print("res:", res)
+
+
+def chaincode_query_installed():
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    timeout = "3s"
+    res, content = newchaincode.lifecycle_query_installed(timeout)
+    print("res", res, content)
+
+
+def chaincode_get_installed_package():
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    timeout = "3s"
+    res = newchaincode.lifecycle_get_installed_package(timeout)
+    print("res", res)
 
 
 if __name__ == "__main__":
@@ -68,4 +82,6 @@ if __name__ == "__main__":
     # # channel_join()
     # channel_getinfo()
     # chaincode_package()
-    chaincode_install()
+    # chaincode_install()
+    chaincode_query_installed()
+    # chaincode_get_installed_package()

@@ -1,4 +1,6 @@
 import os
+import json
+import subprocess
 from cmdLine.basicParameters import BasicEnv
 
 
@@ -40,24 +42,62 @@ class ChainCode(BasicEnv):
         res = res >> 8
         return res
 
-    def lifecycle_query(self):
+    def lifecycle_query_installed(self, timeout):
+        """
+            get the chaincode info installed in peer.
+        :param timeout:
+        :return: res 0 means success
+                 installed_chaincodes: the json format of installed_chaincodes info
+        """
+        if self.version in BasicEnv.binary_versions_v2:
+            # res = os.popen("./../bin/{}/bin/peer lifecycle chaincode queryinstalled --output json --connTimeout {}"
+            #                .format(self.version, timeout), "r")
+            # # with open('./queryInstalled.txt', 'r', encoding='utf-8') as f:
+            # #     content = f.read()
+            # # os.system("rm ./queryInstalled.txt")
+            # body = res.read()
+            # installed_chaincodes = json.loads(body)
+
+            res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode queryinstalled --output json --connTimeout {}".format(self.version, timeout), stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+            stdout,stderr=res.communicate()
+            print(stdout)
+            print(stderr)
         # peer lifecycle chaincode queryinstalled \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
         # - -output
         # json \
         # - -connTimeout "3s"
-        return
+            res = res >> 8
+        return res, installed_chaincodes
 
-    def lifecycle_get_installed(self):
-        # peer lifecycle chaincode getinstalledpackage \
-        # - -peerAddresses ${peer_url} \
-        # - -tlsRootCertFiles ${peer_tls_root_cert} \
-        # - -package - id ${package_id} \
-        # - -output - directory. / \
-        # --output json \
-        # - -connTimeout "3s"
-        return
+    def lifecycle_get_installed_package(self, timeout):
+        """
+            lifecycle_query_installed will return a list installed in peer.
+            then execute cmd to get all chaincode with tar.gz format installed in peer.
+        :param timeout:
+        :return: res_return: 0 means success get all chaincode in peers.
+        """
+        if self.version in BasicEnv.binary_versions_v2:
+            res, installed = self.lifecycle_query_installed("3s")
+            res_return = 0
+            if res == 0:
+                for item in installed['installed_chaincodes']:
+                    # packages_id.append(item['package_id'])
+                    res_get = os.system("./../bin/{}/bin/peer lifecycle chaincode getinstalledpackage --package-id {} "
+                              "--output-directory ./ --connTimeout {}".format(self.version, item['package_id'], timeout))
+                    res_get = res_get >> 8
+                    res_return = res_return or res_get
+
+            else:
+                print("package_id get failed.")
+                return 1, {}
+
+            # res = os.system("./../bin/{}/bin/peer lifecycle chaincode getinstalledpackage --package-id {} "
+            #                 "--output-directory ./ --connTimeout {}".format(self.version, packages_id[0], timeout))
+            # res = res >> 8
+        return res_return
 
     def lifecycle_approve_for_my_org(self):
         # peer lifecycle chaincode approveformyorg \
