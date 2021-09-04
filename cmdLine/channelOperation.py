@@ -22,12 +22,6 @@ class Channel(BasicEnv):
                 res = os.system("./../bin/{}/bin/peer channel create -c {} -o {} -f {} --timeout {} --tls --cafile {}"
                                 .format(self.version, channel, orderer_url, channel_tx, time_out, orderer_tls_rootcert))
 
-        # peer channel create \
-        # - c ${channel} \
-        # - o ${orderer_url} \
-        # - f ${CHANNEL_ARTIFACTS} /${channel_tx} \
-        # - -timeout "${TIMEOUT}s"
-
         # os.system的返回值并不是执行程序的返回结果。而是一个16位的数，它的高位才是返回码
         res = res >> 8
         return res
@@ -36,9 +30,6 @@ class Channel(BasicEnv):
         res = 0x100
         if self.version in BasicEnv.binary_versions_v2:
             res = os.system("./../bin/{}/bin/peer channel join -b {}".format(self.version, block_file))
-        # peer channel join \
-        # - b ${channel}.block \
-        # > & log.txt
         res = res >> 8
         return res
 
@@ -75,13 +66,37 @@ class Channel(BasicEnv):
         # - o ${orderer_url} \
         # - c ${channel} \
         # > & log.txt
+        # try:
+        #     res = os.system("{} channel fetch {} -c {} -o {} --timeout {}".format(
+        #         self.peer, option, channel, orderer_url, time_out))
+        # except Exception as e:
+        #     err_msg = "fetch a specified block failed {}!".format(e)
+        #     raise Exception(err_msg)
+        # res = res >> 8
+        # return res
         return
 
     def signconfigtx(self):
         # peer channel signconfigtx - f ${CHANNEL_ARTIFACTS} /${tx} > & log.txt
+        # try:
+        #     res = os.system(
+        #         "{} channel signconfigtx -f {}".format(self.peer, channel_tx))
+        # except Exception as e:
+        #     err_msg = "signs a configtx update failed {}".format(e)
+        #     raise Exception(err_msg)
+        # res = res >> 8
+        # return res
         return
 
     def update(self):
+        # try:
+        #     res = os.system("{} channel update -c {}  -f {} -o {}"
+        #                     .format(self.peer, channel, channel_tx, orderer_url))
+        # except Exception as e:
+        #     err_msg = "update channel failed for {e}!"
+        #     raise Exception(err_msg)
+        # res = res >> 8
+        # return res
         # peer channel update \
         # - c ${channel} \
         # - o ${orderer_url} \

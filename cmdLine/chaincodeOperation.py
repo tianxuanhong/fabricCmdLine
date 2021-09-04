@@ -8,19 +8,37 @@ class ChainCode(BasicEnv):
     def __init__(self, version, **kwargs):
         super(ChainCode, self).__init__(version, **kwargs)
 
-    def lifecycle_install(self):
+    def lifecycle_package(self, cc_name, cc_path, language, label):
+        """
+            package the chaincode to a tar.gz file.
+        :param cc_name: chaincode name
+        :param cc_path: where the chaincode is
+        :param language: Chain code development language, default: golang
+        :param label: Label of the generated chain code package
+        :return 0 means success.
+        """
         if self.version in BasicEnv.binary_versions_v2:
-            os.system("./../{}/peer ")
-        # peer lifecycle chaincode package ${cc_name}.tar.gz \
-        #  - -path ${cc_path} \
-        #  - -lang golang \
-        #  - -label ${label}
+            res = os.system("./../bin/{}/bin/peer lifecycle chaincode package {}.tar.gz --path {} --lang {} --label {}"
+                            .format(self.version, cc_name, cc_path, language, label))
+            res = res >> 8
+            print("res", res)
+        return
+
+    def lifecycle_install(self, cc_targz):
+        """
+
+             :param cc_targz: the path of chaincode
+             :return: 0 means success.
+             """
+        if self.version in BasicEnv.binary_versions_v2:
+            res = os.system("./../bin/{}/bin/peer lifecycle chaincode install {}".format(self.version, cc_targz))
 
         # peer lifecycle chaincode install \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
         # {cc_name}.tar.gz | tee > & log.txt
-        return
+        res = res >> 8
+        return res
 
     def lifecycle_query(self):
         # peer lifecycle chaincode queryinstalled \
