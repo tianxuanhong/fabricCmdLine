@@ -1,5 +1,6 @@
 import os
 import json
+import subprocess
 from cmdLine.basicParameters import BasicEnv
 
 
@@ -38,28 +39,39 @@ class Channel(BasicEnv):
         res = 0x100
         content = ""
         if self.version in BasicEnv.binary_versions_v2:
-            res = os.system("./../bin/{}/bin/peer channel list > ./list.txt".format(self.version))
-            with open('./list.txt', 'r', encoding='utf-8') as f:
-                content = f.read()
-            content = content.split("\n")
-            os.system("rm ./list.txt")
+            res = subprocess.Popen("./../bin/{}/bin/peer channel list".format(self.version), shell=True,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # peer channel list > & log.txt
+            stdout, stderr = res.communicate()
+            return_code = res.returncode
+
+            if return_code == 0:
+                content = str(stdout, encoding="utf-8")
+                content = content.split("\n")
+                return return_code, content[1:-1]
+            else:
+                return return_code, stderr
+
         return res, content[1:-1]
 
     def getinfo(self, channel):
-        res = 0x100
         if self.version in BasicEnv.binary_versions_v2:
-            res = os.system("./../bin/{}/bin/peer channel getinfo -c {} > ./getinfo.txt".format(self.version, channel))
-            with open('./getinfo.txt', 'r', encoding='utf-8') as f:
-                content = f.read()
-            content = content.split("\n")[0].split(":", 1)[1]
-            # content = content.split("\n")[0]
-            os.system("rm ./getinfo.txt")
-        block_info = json.loads(content)
-        body = {"block_info": block_info}
+            res = subprocess.Popen("./../bin/{}/bin/peer channel getinfo -c {}".format(self.version, channel),
+                                   shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = res.communicate()
+            return_code = res.returncode
+
+            if return_code == 0:
+                content = str(stdout, encoding="utf-8")
+                content = content.split("\n")[0].split(":", 1)[1]
+
+                block_info = json.loads(content)
+                body = {"block_info": block_info}
+            else:
+                stderr = str(stderr, encoding="utf-8")
+                return return_code, stderr
         # peer channel getinfo -c ${channel} >&log.txt
-        return res, body
+        return return_code, body
 
     def fetch(self):
         # peer channel fetch $num ${block_file} \

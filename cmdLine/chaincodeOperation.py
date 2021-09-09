@@ -10,16 +10,16 @@ class ChainCode(BasicEnv):
     def __init__(self, version, **kwargs):
         super(ChainCode, self).__init__(version, **kwargs)
 
-    def lifecycle_package(self, cc_name, cc_path, language, label):
+    def lifecycle_package(self, cc_name, cc_version, cc_path, language):
         """
             package the chaincode to a tar.gz file.
         :param cc_name: chaincode name
         :param cc_path: where the chaincode is
         :param language: Chain code development language, default: golang
-        :param label: Label of the generated chain code package
         :return 0 means success.
         """
         if self.version in BasicEnv.binary_versions_v2:
+            label = cc_name+"_"+cc_version
             res = os.system("./../bin/{}/bin/peer lifecycle chaincode package {}.tar.gz --path {} --lang {} --label {}"
                             .format(self.version, cc_name, cc_path, language, label))
             res = res >> 8
@@ -50,7 +50,8 @@ class ChainCode(BasicEnv):
                  installed_chaincodes: the json format of installed_chaincodes info
         """
         if self.version in BasicEnv.binary_versions_v2:
-            # res = os.popen("./../bin/{}/bin/peer lifecycle chaincode queryinstalled --output json --connTimeout {}"
+            # res = os.system("./../bin/{}/bin/peer lifecycle chaincode queryinstalled --output json --connTimeout
+            # {} > queryInstalled.txt"
             #                .format(self.version, timeout), "r")
             # # with open('./queryInstalled.txt', 'r', encoding='utf-8') as f:
             # #     content = f.read()
@@ -58,19 +59,18 @@ class ChainCode(BasicEnv):
             # body = res.read()
             # installed_chaincodes = json.loads(body)
 
-            res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode queryinstalled --output json --connTimeout {}".format(self.version, timeout), stdout=subprocess.PIPE,
+            res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode queryinstalled --output json "
+                                   "--connTimeout {}".format(self.version, timeout), shell=True, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
-            stdout,stderr=res.communicate()
-            print(stdout)
-            print(stderr)
-        # peer lifecycle chaincode queryinstalled \
-        # - -peerAddresses ${peer_url} \
-        # - -tlsRootCertFiles ${peer_tls_root_cert} \
-        # - -output
-        # json \
-        # - -connTimeout "3s"
-            res = res >> 8
-        return res, installed_chaincodes
+            stdout, stderr = res.communicate()
+            return_code = res.returncode
+            if return_code == 0:
+                content = str(stdout, encoding="utf-8")
+                installed_chaincodes = json.loads(content)
+                return return_code, installed_chaincodes
+            else:
+                stderr = str(stderr, encoding="utf-8")
+                return return_code, stderr
 
     def lifecycle_get_installed_package(self, timeout):
         """
@@ -99,21 +99,58 @@ class ChainCode(BasicEnv):
             # res = res >> 8
         return res_return
 
-    def lifecycle_approve_for_my_org(self):
-        # peer lifecycle chaincode approveformyorg \
-        # - -peerAddresses ${peer_url} \
-        # - -channelID ${channel} \
-        # - -name ${cc_name} \
-        # - -version ${version} \
-        # - -init - required \
-        # - -package - id ${package_id} \
-        # - -sequence 1 \
-        # - -signature - policy "${policy}" \
-        # - -waitForEvent \
-        # - -orderer ${orderer_url} > & log.txt
-        return
+    def lifecycle_approve_for_my_org(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name,
+                                     chaincode_version, policy):
+        res, installed = self.lifecycle_query_installed("3s")
+        cc_label = cc_name+"_"+chaincode_version
+        package_id = ""
+        for each in installed['installed_chaincodes']:
+            if each['label'] == cc_label:
+                package_id = each['package_id']
+                break
+        if package_id == "":
+            return 1, "not exist the chaincode, please check chaincode_name and chaincode_version"
 
-    def lifecycle_query_approved(self):
+        if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = os.system("./../bin/{}/bin/peer lifecycle chaincode approveformyorg -o {} "
+                                " --channelID {} --name {} --version {} --init-required --package-id {} --sequence 1"
+                                " --signature-policy {} > ./approve.txt"
+                                .format(self.version, orderer_url, channel_name, cc_name,
+                                        chaincode_version, package_id, policy))
+        else:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode approveformyorg -o {} --tls "
+                                       "--cafile {} --channelID {} --name {} --version {} --init-required --package-id "
+                                       "{} --sequence 1 --signature-policy {}"
+                                       .format(self.version, orderer_url, orderer_tls_rootcert, channel_name,
+                                               cc_name, chaincode_version, package_id, policy), shell=True,
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+
+                if return_code == 0:
+                    content = str(stdout, encoding="utf-8")
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
+        return return_code, content
+
+    def lifecycle_query_approved(self, channel_name, cc_name):
+        if self.version in BasicEnv.binary_versions_v2:
+
+            res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode queryapproved --output json --channelID {}"
+                                   " --name {}".format(self.version, channel_name, cc_name),
+                                   shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = res.communicate()
+            return_code = res.returncode
+            if return_code == 0:
+                content = str(stdout, encoding="utf-8")
+                chaincodes_info = json.loads(content)
+                return return_code, chaincodes_info
+            else:
+                stderr = str(stderr, encoding="utf-8")
+                return return_code, stderr
         # peer lifecycle chaincode queryapproved \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
