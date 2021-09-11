@@ -1,5 +1,6 @@
 from cmdLine.channelOperation import Channel
 from cmdLine.chaincodeOperation import ChainCode
+import array
 
 
 def channel_create():
@@ -24,13 +25,13 @@ def channel_list():
 
 def channel_join():
     block_file = "/opt/gopath/src/github.com/hyperledger/celloCmdLine/fabricOperation/mychannel3.block"
-    newchannel = Channel("v2.2.0", **envCli)
+    newchannel = Channel("v2.2.0", **envCli2)
     res = newchannel.join(block_file)
     print()
 
 
 def channel_getinfo():
-    newchannel = Channel("v2.2.0", **envCli)
+    newchannel = Channel("v2.2.0", **envCli2)
     channel_name = "mychannel3"
     res = newchannel.getinfo(channel_name)
     print("content", res[0])
@@ -48,21 +49,21 @@ def chaincode_package():
 
 
 def chaincode_install():
-    newchaincode = ChainCode("v2.2.0", **envCli)
+    newchaincode = ChainCode("v2.2.0", **envCli2)
     cc_targz = "./example02.tar.gz"
     res = newchaincode.lifecycle_install(cc_targz)
     print("res:", res)
 
 
 def chaincode_query_installed():
-    newchaincode = ChainCode("v2.2.0", **envCli)
+    newchaincode = ChainCode("v2.2.0", **envCli2)
     timeout = "3s"
     res, content = newchaincode.lifecycle_query_installed(timeout)
     print("res", res, content)
 
 
 def chaincode_get_installed_package():
-    newchaincode = ChainCode("v2.2.0", **envCli)
+    newchaincode = ChainCode("v2.2.0", **envCli2)
     timeout = "3s"
     res = newchaincode.lifecycle_get_installed_package(timeout)
     print("res", res)
@@ -75,20 +76,57 @@ def chaincode_lifecycle_approve_for_my_org():
                            "tlsca.example.com-cert.pem"
     channel_name = "mychannel3"
     chaincode_name = "example02"
-    chaincode_version = "label"
+    chaincode_version = "1.0"
     package_id = "example02_label:d3ea0e44f81e1d9bb6cee4441563e0adfeba3c32dd34ecb330890939a9884266"
     policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
-    newchaincode = ChainCode("v2.2.0", **envCli)
+    newchaincode = ChainCode("v2.2.0", **envCli2)
+    sequence=1
     res = newchaincode.lifecycle_approve_for_my_org(orderer_url, orderer_tls_rootcert, channel_name, chaincode_name,
-                                     chaincode_version, policy)
+                                     chaincode_version, policy,sequence)
 
 
 def chaincode_lifecycle_query_approved():
     channel_name = "mychannel3"
     cc_name = "example02"
-    newchaincode = ChainCode("v2.2.0", **envCli)
-    res = newchaincode.lifecycle_query_approved(channel_name, cc_name)
+    newchaincode = ChainCode("v2.2.0", **envCli2)
+    code, res = newchaincode.lifecycle_query_approved(channel_name, cc_name)
+    print("code", code)
     print("res", res)
+
+
+def chaincode_lifecycle_check_commit_readiness():
+    orderer_url = "localhost:7050"
+    orderer_tls_rootcert = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/" \
+                           "ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/" \
+                           "tlsca.example.com-cert.pem"
+    channel_name = "mychannel3"
+    cc_name = "example02"
+    cc_version = "1.0"
+    policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    sequency=1
+    code, res = newchaincode.lifecycle_check_commit_readiness(orderer_url, orderer_tls_rootcert, channel_name, cc_name,
+                                                              cc_version, policy, sequency)
+    print(code)
+    print(res)
+
+
+def chaincode_lifecycle_commit():
+    orderer_url = "localhost:7050"
+    orderer_tls_rootcert = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/" \
+                           "ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/" \
+                           "tlsca.example.com-cert.pem"
+    channel_name = "mychannel3"
+    cc_name = "example02"
+    cc_version = "1.0"
+    peerlist = ["localhost:7051", "localhost:9051"]
+    peer_root_certs = ["/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt","/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt"]
+    policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
+    sequency=1
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    res = newchaincode.lifecycle_commit(orderer_url, orderer_tls_rootcert, channel_name, cc_name, cc_version,
+                                        policy, peerlist, peer_root_certs)
+    print(res)
 
 
 if __name__ == "__main__":
@@ -100,13 +138,24 @@ if __name__ == "__main__":
                                           "organizations/peerOrganizations/org1.example.com/users/"
                                           "Admin@org1.example.com/msp",
                   CORE_PEER_ADDRESS="localhost:7051")
+
+    envCli2 = dict(CORE_PEER_LOCALMSPID="Org2MSP",
+                   CORE_PEER_TLS_ROOTCERT_FILE="/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/"
+                                               "organizations/peerOrganizations/org2.example.com/peers/"
+                                               "peer0.org2.example.com/tls/ca.crt",
+                   CORE_PEER_MSPCONFIGPATH="/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/"
+                                           "organizations/peerOrganizations/org2.example.com/users/"
+                                           "Admin@org2.example.com/msp",
+                   CORE_PEER_ADDRESS="localhost:9051")
     # # channel_create()
     # channel_list()
-    # # channel_join()
+    # channel_join()
     # channel_getinfo()
     # chaincode_package()
     # chaincode_install()
     # chaincode_query_installed()
     # chaincode_get_installed_package()
     # chaincode_lifecycle_approve_for_my_org()
-    chaincode_lifecycle_query_approved()
+    # chaincode_lifecycle_query_approved()
+    chaincode_lifecycle_check_commit_readiness()
+    # chaincode_lifecycle_commit()

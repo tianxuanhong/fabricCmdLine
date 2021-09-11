@@ -86,7 +86,8 @@ class ChainCode(BasicEnv):
                 for item in installed['installed_chaincodes']:
                     # packages_id.append(item['package_id'])
                     res_get = os.system("./../bin/{}/bin/peer lifecycle chaincode getinstalledpackage --package-id {} "
-                              "--output-directory ./ --connTimeout {}".format(self.version, item['package_id'], timeout))
+                                        "--output-directory ./ --connTimeout {}"
+                                        .format(self.version, item['package_id'], timeout))
                     res_get = res_get >> 8
                     res_return = res_return or res_get
 
@@ -100,7 +101,18 @@ class ChainCode(BasicEnv):
         return res_return
 
     def lifecycle_approve_for_my_org(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name,
-                                     chaincode_version, policy):
+                                     chaincode_version, policy, sequence=1):
+        """
+                The administrator can use the peer lifecycle chaincode approveformyorg subcommand to approve the chain code on
+                behalf of the organization.
+                :param orderer_url: orderer accessable url
+                :param orderer_tls_rootcert: orderer tls certificate
+                :param channel_name: channel name
+                :param cc_name: chaincode name
+                :param chaincode_version: chaincode version
+                :param policy: chaincode policy
+                :return:
+        """
         res, installed = self.lifecycle_query_installed("3s")
         cc_label = cc_name+"_"+chaincode_version
         package_id = ""
@@ -114,17 +126,17 @@ class ChainCode(BasicEnv):
         if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
             if self.version in BasicEnv.binary_versions_v2:
                 res = os.system("./../bin/{}/bin/peer lifecycle chaincode approveformyorg -o {} "
-                                " --channelID {} --name {} --version {} --init-required --package-id {} --sequence 1"
+                                " --channelID {} --name {} --version {} --init-required --package-id {} --sequence {}"
                                 " --signature-policy {} > ./approve.txt"
                                 .format(self.version, orderer_url, channel_name, cc_name,
-                                        chaincode_version, package_id, policy))
+                                        chaincode_version, package_id, sequence, policy))
         else:
             if self.version in BasicEnv.binary_versions_v2:
                 res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode approveformyorg -o {} --tls "
                                        "--cafile {} --channelID {} --name {} --version {} --init-required --package-id "
-                                       "{} --sequence 1 --signature-policy {}"
+                                       "{} --sequence {} --signature-policy {}"
                                        .format(self.version, orderer_url, orderer_tls_rootcert, channel_name,
-                                               cc_name, chaincode_version, package_id, policy), shell=True,
+                                               cc_name, chaincode_version, package_id, sequence, policy), shell=True,
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = res.communicate()
                 return_code = res.returncode
@@ -137,6 +149,12 @@ class ChainCode(BasicEnv):
         return return_code, content
 
     def lifecycle_query_approved(self, channel_name, cc_name):
+        """
+                 query_approved chaincode information.
+                :param channel_name: channel name
+                :param cc_name: chaincode name
+                :return:
+                """
         if self.version in BasicEnv.binary_versions_v2:
 
             res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode queryapproved --output json --channelID {}"
@@ -159,7 +177,39 @@ class ChainCode(BasicEnv):
         # - -output json
         return
 
-    def lifecycle_check_commit_readiness(self):
+    def lifecycle_check_commit_readiness(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name, cc_version, policy, sequence=1):
+        if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode checkcommitreadiness --output json "
+                                       " --channelID {}  --name {} --version {} --init-required --sequence {} --signature-policy {}"
+                                       .format(self.version, channel_name, cc_name, cc_version, sequence, policy),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    content = str(stdout, encoding="utf-8")
+                    chaincodes_info = json.loads(content)
+                    return return_code, chaincodes_info
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
+        else:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode checkcommitreadiness --output json "
+                                       "-o {} --tls --cafile {} --channelID {}  --name {} --version {} "
+                                       "--signature-policy {} --init-required --sequence {}"
+                                       .format(self.version, orderer_url, orderer_tls_rootcert, channel_name, cc_name,
+                                               cc_version, policy, sequence),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    content = str(stdout, encoding="utf-8")
+                    chaincodes_info = json.loads(content)
+                    return return_code, chaincodes_info
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
         # peer lifecycle chaincode checkcommitreadiness \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
@@ -168,9 +218,32 @@ class ChainCode(BasicEnv):
         # - -output json \
         # - -version ${version} \
         # - -sequence ${sequence}
-        return
 
-    def lifecycle_commit(self):
+    def lifecycle_commit(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name, chaincode_version,
+                         policy, peerlist, peer_root_certs, sequency=1, collections_config=""):
+        peer_addresses_format = " --peerAddresses {} --tlsRootCertFiles {}"
+        command_str_with_tls = "./../bin/{}/bin/peer lifecycle chaincode commit -o {} --tls --cafile {} " \
+                               "--channelID {} --name {} --version {} --init-required --sequence {} " \
+                               "--signature-policy {}"
+        command_str_without_tls = "./../bin/{}/bin/peer lifecycle chaincode commit -o {} --channelID {} --name {} " \
+                                  "--version {} --init-required --sequence {} --signature-policy {}"
+
+        peer_addressed = []
+        for i in range(len(peerlist)):
+            peer_addressed.append(peerlist[i])
+            peer_addressed.append(peer_root_certs[i])
+        if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
+            for i in range(len(peerlist)):
+                command_str_without_tls = command_str_without_tls + peer_addresses_format
+            if self.version in BasicEnv.binary_versions_v2:
+                res = os.system(command_str_without_tls.format(self.version, orderer_url, channel_name, cc_name,
+                                chaincode_version, sequency, policy, *peer_addressed))      #--collections-config {} --signature-policy {}
+        else:
+            for i in range(len(peerlist)):
+                command_str_with_tls = command_str_with_tls + peer_addresses_format
+            if self.version in BasicEnv.binary_versions_v2:
+                res = os.system(command_str_with_tls.format(self.version, orderer_url, orderer_tls_rootcert, channel_name,
+                                cc_name, chaincode_version, sequency, policy, *peer_addressed))
         # peer lifecycle chaincode commit \
         # - o ${orderer_url} \
         # - -channelID ${channel} \
@@ -185,7 +258,8 @@ class ChainCode(BasicEnv):
         # - -waitForEvent \
         # - -collections - config "${collection_config}" \
         # - -signature - policy "${policy}"
-        return
+        res = res >> 8
+        return res
 
     def lifecycle_query_committed(self):
         # peer lifecycle chaincode querycommitted \
