@@ -1,6 +1,6 @@
 from cmdLine.channelOperation import Channel
 from cmdLine.chaincodeOperation import ChainCode
-import array
+import json
 
 
 def channel_create():
@@ -42,14 +42,14 @@ def chaincode_package():
     newchaincode = ChainCode("v2.2.0", **envCli)
     cc_name = "example02"
     cc_path = "github.com/chaincode/go/example02"
-    cc_version = "1.0"
+    cc_version = "3.0"
     language = "golang"
     res = newchaincode.lifecycle_package(cc_name, cc_version, cc_path, language)
     print(res)
 
 
 def chaincode_install():
-    newchaincode = ChainCode("v2.2.0", **envCli2)
+    newchaincode = ChainCode("v2.2.0", **envCli)
     cc_targz = "./example02.tar.gz"
     res = newchaincode.lifecycle_install(cc_targz)
     print("res:", res)
@@ -63,7 +63,7 @@ def chaincode_query_installed():
 
 
 def chaincode_get_installed_package():
-    newchaincode = ChainCode("v2.2.0", **envCli2)
+    newchaincode = ChainCode("v2.2.0", **envCli)
     timeout = "3s"
     res = newchaincode.lifecycle_get_installed_package(timeout)
     print("res", res)
@@ -76,19 +76,19 @@ def chaincode_lifecycle_approve_for_my_org():
                            "tlsca.example.com-cert.pem"
     channel_name = "mychannel3"
     chaincode_name = "example02"
-    chaincode_version = "1.0"
+    chaincode_version = "3.0"
     package_id = "example02_label:d3ea0e44f81e1d9bb6cee4441563e0adfeba3c32dd34ecb330890939a9884266"
     policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
-    newchaincode = ChainCode("v2.2.0", **envCli2)
-    sequence=1
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    sequence=6
     res = newchaincode.lifecycle_approve_for_my_org(orderer_url, orderer_tls_rootcert, channel_name, chaincode_name,
-                                     chaincode_version, policy,sequence)
+                                     chaincode_version, policy, sequence)
 
 
 def chaincode_lifecycle_query_approved():
     channel_name = "mychannel3"
     cc_name = "example02"
-    newchaincode = ChainCode("v2.2.0", **envCli2)
+    newchaincode = ChainCode("v2.2.0", **envCli)
     code, res = newchaincode.lifecycle_query_approved(channel_name, cc_name)
     print("code", code)
     print("res", res)
@@ -101,10 +101,10 @@ def chaincode_lifecycle_check_commit_readiness():
                            "tlsca.example.com-cert.pem"
     channel_name = "mychannel3"
     cc_name = "example02"
-    cc_version = "1.0"
+    cc_version = "3.0"
     policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
     newchaincode = ChainCode("v2.2.0", **envCli)
-    sequency=1
+    sequency=5
     code, res = newchaincode.lifecycle_check_commit_readiness(orderer_url, orderer_tls_rootcert, channel_name, cc_name,
                                                               cc_version, policy, sequency)
     print(code)
@@ -118,14 +118,36 @@ def chaincode_lifecycle_commit():
                            "tlsca.example.com-cert.pem"
     channel_name = "mychannel3"
     cc_name = "example02"
-    cc_version = "1.0"
+    cc_version = "3.0"
     peerlist = ["localhost:7051", "localhost:9051"]
     peer_root_certs = ["/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt","/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt"]
     policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
-    sequency=1
+    sequency=6
     newchaincode = ChainCode("v2.2.0", **envCli)
     res = newchaincode.lifecycle_commit(orderer_url, orderer_tls_rootcert, channel_name, cc_name, cc_version,
-                                        policy, peerlist, peer_root_certs)
+                                        policy, peerlist, peer_root_certs, sequency)
+    print(res)
+
+
+def chaincode_lifecycle_query_committed():
+    channel_name = "mychannel3"
+    cc_name = "example02"
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    res = newchaincode.lifecycle_query_committed(channel_name, cc_name)
+    print("res:", res)
+
+
+def chaincode_invoke():
+    orderer_url = "localhost:7050"
+    orderer_tls_rootcert = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/" \
+                           "ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/" \
+                           "tlsca.example.com-cert.pem"
+    channel_name = "mychannel3"
+    cc_name = "example02"
+    args1 = '{"Args":["invoke","a","b","1"]}'
+    init = False
+    newchaincode = ChainCode("v2.2.0", **envCli2)
+    res = newchaincode.invoke(orderer_url, orderer_tls_rootcert, channel_name, cc_name, args1)
     print(res)
 
 
@@ -157,5 +179,7 @@ if __name__ == "__main__":
     # chaincode_get_installed_package()
     # chaincode_lifecycle_approve_for_my_org()
     # chaincode_lifecycle_query_approved()
-    chaincode_lifecycle_check_commit_readiness()
+    # chaincode_lifecycle_check_commit_readiness()
     # chaincode_lifecycle_commit()
+    # chaincode_lifecycle_query_committed()
+    chaincode_invoke()

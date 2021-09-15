@@ -261,28 +261,62 @@ class ChainCode(BasicEnv):
         res = res >> 8
         return res
 
-    def lifecycle_query_committed(self):
+    def lifecycle_query_committed(self, channel_name, cc_name):
+        if self.version in BasicEnv.binary_versions_v2:
+            res = subprocess.Popen("./../bin/{}/bin/peer lifecycle chaincode querycommitted --channelID {} "
+                                   "--output json --name {}".format(self.version, channel_name, cc_name),
+                                   shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = res.communicate()
+            return_code = res.returncode
+            if return_code == 0:
+                content = str(stdout, encoding="utf-8")
+                chaincodes_commited = json.loads(content)
+                return return_code, chaincodes_commited
+            else:
+                stderr = str(stderr, encoding="utf-8")
+                return return_code, stderr
         # peer lifecycle chaincode querycommitted \
         # - -peerAddresses ${peer_url} \
         # - -tlsRootCertFiles ${peer_tls_root_cert} \
         # - -channelID ${channel} \
         # - -output json \
         # - -name ${cc_name}
-        return
 
-    def instantiate(self):
-        # peer chaincode instantiate \
-        # - o ${orderer_url} \
-        # - C ${channel} \
-        # - n ${cc_name} \
-        # - v ${version} \
-        # - c ${args} \
-        # - P "${policy}" \
-        # - -collections - config "${collection_config}" \
-        # > & log.txt
-        return
+    def invoke(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name, args, init=False):
 
-    def invoke(self):
+        if init:
+            invoke_command = "./../bin/{}/bin/peer chaincode invoke -I -o {} --channelID {} --name {} -c '{}'"
+            invoke_command_tls = "./../bin/{}/bin/peer chaincode invoke -I -o {} --tls --cafile {} --channelID {}" \
+                                 " --name {} -c '{}'"
+        else:
+            invoke_command = "./../bin/{}/bin/peer chaincode invoke -o {} --channelID {} --name {} -c '{}'"
+            invoke_command_tls = "./../bin/{}/bin/peer chaincode invoke -o {} --tls --cafile {} --channelID {} " \
+                                 "--name {} -c '{}'"
+
+        if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen(invoke_command.format(self.version, orderer_url,
+                                                                channel_name, cc_name, args),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    return return_code, ''
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
+        else:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen(invoke_command_tls.format(self.version, orderer_url, orderer_tls_rootcert,
+                                                                  channel_name, cc_name, args),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    return return_code, ''
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
         # peer chaincode invoke \
         # - o ${orderer_url} \
         # - -channelID ${channel} \
@@ -291,7 +325,6 @@ class ChainCode(BasicEnv):
         # - -tlsRootCertFiles ${peer_org_tlsca} \
         # - c ${args} \
         # > & log.txt
-        return
 
     def query(self):
         # peer chaincode query \
