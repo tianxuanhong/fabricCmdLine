@@ -49,7 +49,7 @@ def chaincode_package():
 
 
 def chaincode_install():
-    newchaincode = ChainCode("v2.2.0", **envCli)
+    newchaincode = ChainCode("v2.2.0", **envCli2)
     cc_targz = "./example02.tar.gz"
     res = newchaincode.lifecycle_install(cc_targz)
     print("res:", res)
@@ -151,6 +151,36 @@ def chaincode_invoke():
     print(res)
 
 
+def chaincode_query():
+    orderer_url = "localhost:7050"
+    orderer_tls_rootcert = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/" \
+                           "ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/" \
+                           "tlsca.example.com-cert.pem"
+    channel_name = "mychannel3"
+    cc_name = "example02"
+    args1 = '{"Args":["query","b"]}'
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    res = newchaincode.query(orderer_url, orderer_tls_rootcert, channel_name, cc_name, args1)
+    print(res)
+
+
+def chaincode_upgrade():
+    orderer_url = "localhost:7050"
+    orderer_tls_rootcert = "/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/organizations/" \
+                           "ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/" \
+                           "tlsca.example.com-cert.pem"
+    channel_name = "mychannel3"
+    cc_name = "example02"
+    cc_version = "3.0"
+    upgrade_args = '{"Args":["init","a","100","b","200"]}'
+    args1 = '{"Args":["query","b"]}'
+    policy = "\"OR ('Org1MSP.member','Org2MSP.member')\""
+    newchaincode = ChainCode("v2.2.0", **envCli)
+    res = newchaincode.upgrade(orderer_url, orderer_tls_rootcert, channel_name, cc_name, cc_version,
+                               upgrade_args, policy)
+    print(res)
+
+
 if __name__ == "__main__":
     envCli = dict(CORE_PEER_LOCALMSPID="Org1MSP",
                   CORE_PEER_TLS_ROOTCERT_FILE="/opt/gopath/src/github.com/hyperledger/fabric-samples/test-network/"
@@ -182,4 +212,6 @@ if __name__ == "__main__":
     # chaincode_lifecycle_check_commit_readiness()
     # chaincode_lifecycle_commit()
     # chaincode_lifecycle_query_committed()
-    chaincode_invoke()
+    # chaincode_invoke()
+    # chaincode_query()
+    chaincode_upgrade()

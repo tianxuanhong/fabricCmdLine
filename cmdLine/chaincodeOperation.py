@@ -326,7 +326,34 @@ class ChainCode(BasicEnv):
         # - c ${args} \
         # > & log.txt
 
-    def query(self):
+    def query(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name, args):
+        if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen("./../bin/{}/bin/peer chaincode query -o {} --channelID {} --name {} -c '{}'"
+                                       .format(self.version, orderer_url, channel_name, cc_name, args),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    return return_code, ''
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
+        else:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen("./../bin/{}/bin/peer chaincode query -o {} --tls --cafile {} --channelID {}"
+                                       " --name {} -c '{}'".format(self.version, orderer_url, orderer_tls_rootcert,
+                                                                   channel_name, cc_name, args),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    content = str(stdout, encoding="utf-8")
+                    query_result = json.loads(content)
+                    return return_code, query_result
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
         # peer chaincode query \
         # - C "${channel}" \
         # - n "${cc_name}" \
@@ -334,14 +361,47 @@ class ChainCode(BasicEnv):
         # - -tlsRootCertFiles ${peer_org_tlsca} \
         # - c "${args}" \
         # > & log.txt
-        return
 
-    def list(self):
-        # peer chaincode list \
-        # - -installed > log.txt &
-        return
-
-    def upgrade(self):
+    def upgrade(self, orderer_url, orderer_tls_rootcert, channel_name, cc_name, cc_version, args, policy, collections_config=""):
+        if collections_config == "":
+            command = "./../bin/{}/bin/peer chaincode upgrade -o {} --channelID {} --name {} -v {} -c '{}' -P {}"
+            command_tls = "./../bin/{}/bin/peer chaincode upgrade -o {} --tls --cafile {} --channelID {} --name {} " \
+                          "-v {} -c '{}' -P {}"
+            parameters = [self.version, orderer_url, channel_name, cc_name, cc_version, args, policy]
+            parameters_tls = [self.version, orderer_url, orderer_tls_rootcert, channel_name, cc_name,
+                              cc_version, args, policy]
+        else:
+            command = "./../bin/{}/bin/peer chaincode upgrade -o {} --channelID {} --name {} -v {} -c '{}' -P {} " \
+                      "--collections-config {}"
+            command_tls = "./../bin/{}/bin/peer chaincode upgrade -o {} --tls --cafile {} --channelID {} --name {} " \
+                          "-v {} -c '{}' -P {} --collections-config {}"
+            parameters = [self.version, orderer_url, channel_name, cc_name, cc_version, args, policy, collections_config]
+            parameters_tls = [self.version, orderer_url, orderer_tls_rootcert, channel_name, cc_name, cc_version, args,
+                              policy, collections_config]
+        if os.getenv("CORE_PEER_TLS_ENABLED") == "false" or os.getenv("CORE_PEER_TLS_ENABLED") is None:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen(command.format(*parameters), shell=True, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    return return_code, ''
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
+        else:
+            if self.version in BasicEnv.binary_versions_v2:
+                res = subprocess.Popen(command_tls.format(*parameters_tls),
+                                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = res.communicate()
+                return_code = res.returncode
+                if return_code == 0:
+                    content = str(stdout, encoding="utf-8")
+                    query_result = json.loads(content)
+                    return return_code, query_result
+                else:
+                    stderr = str(stderr, encoding="utf-8")
+                    return return_code, stderr
         # peer chaincode upgrade \
         # - o ${orderer_url} \
         # - C ${channel} \
@@ -351,4 +411,3 @@ class ChainCode(BasicEnv):
         # - P "${policy}" \
         # - -collections - config "${collection_config}" \
         # > & log.txt
-        return
