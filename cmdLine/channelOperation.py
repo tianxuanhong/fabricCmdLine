@@ -73,7 +73,15 @@ class Channel(BasicEnv):
         # peer channel getinfo -c ${channel} >&log.txt
         return return_code, body
 
-    def fetch(self):
+    def fetch(self,option, channel, orderer_url, time_out="90s"):
+        try:
+            res = os.system("./../bin/{}/bin/peer channel fetch {} -c {} -o {} --timeout {}".format(
+                self.version, option, channel, orderer_url, time_out))
+        except Exception as e:
+            err_msg = "fetch a specified block failed {}!".format(e)
+            raise Exception(err_msg)
+        res = res >> 8
+        return res
         # peer channel fetch $num ${block_file} \
         # - o ${orderer_url} \
         # - c ${channel} \
@@ -86,9 +94,8 @@ class Channel(BasicEnv):
         #     raise Exception(err_msg)
         # res = res >> 8
         # return res
-        return
 
-    def signconfigtx(self):
+    def signconfigtx(self,channel_tx):
         # peer channel signconfigtx - f ${CHANNEL_ARTIFACTS} /${tx} > & log.txt
         # try:
         #     res = os.system(
@@ -98,7 +105,14 @@ class Channel(BasicEnv):
         #     raise Exception(err_msg)
         # res = res >> 8
         # return res
-        return
+        try:
+            res = os.system(
+                "./../bin/{}/bin/peer channel signconfigtx -f {}".format(self.version, channel_tx))
+        except Exception as e:
+            err_msg = "signs a configtx update failed {}".format(e)
+            raise Exception(err_msg)
+        res = res >> 8
+        return res
 
     def update(self):
         # try:
